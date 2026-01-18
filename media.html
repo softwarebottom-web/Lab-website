@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Media & Broadcast</title>
+    <title>Media & Broadcast - Archive Lab</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -24,10 +24,30 @@
         </h2>
         
         <div id="media-news-list">
-            <p style="text-align: center; color: #aaa;">Menunggu transmisi data...</p>
+            <div style="text-align: center; padding: 50px;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--accent);"></i>
+                <p style="margin-top: 15px; color: #aaa;">Menghubungkan ke pemancar data...</p>
+            </div>
         </div>
     </div>
 
+    <div id="news-modal" class="modal-overlay">
+        <div class="glass modal-box">
+            <span class="close-modal" onclick="document.getElementById('news-modal').style.display='none'">&times;</span>
+            <h2 id="modal-title" style="color: var(--accent); margin-bottom: 15px;">Judul Info</h2>
+            <div style="border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px;"></div>
+            <p id="modal-desc" style="line-height: 1.6; margin-bottom: 25px; color: #ddd;">Deskripsi lengkap...</p>
+            <a id="modal-link" href="#" target="_blank" class="btn btn-primary" style="width: 100%; text-align: center;">
+                <i class="fas fa-external-link-alt"></i> Buka Tautan Terkait
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Archive Lab. System Broadcast v2.0</p>
+    </footer>
+
+    <script src="main.js"></script>
     <script type="module" src="App.js"></script>
 </body>
 </html>
