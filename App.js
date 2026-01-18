@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = { 
     apiKey: "AIzaSyCtOhGoiGPHYUgyERjg43pt6_QW-gBjhL4", 
@@ -12,28 +12,24 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
 let currentUserData = null;
 
-// --- 🛡️ SECURITY ---
-(function(){
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    document.onkeydown = e => { if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false; };
-    setInterval(() => { debugger; }, 1000);
-})();
-
+// Helper ambil nilai input (Pencegah Error Loading)
 const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ""; };
 
-// --- 🔑 AUTH & STATE ---
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         const uDoc = await getDoc(doc(db, "users", user.uid));
         if (uDoc.exists()) {
             currentUserData = { ...uDoc.data(), uid: user.uid };
-            if(currentUserData.status === 'banned') { alert("DIBLOKIR!"); signOut(auth); return; }
             
-            // Sync UI
-            syncGlobalUI();
+            // ISI NAMA & DATA GLOBAL (Solusi Masalah 6)
+            document.querySelectorAll('#display-name').forEach(el => el.innerText = currentUserData.name);
+            
+            // LOAD SEMUA (Solusi Masalah 2 & 3)
+            syncUI();
             loadProjects();
             loadNews();
-            if (window.location.pathname.includes('profile.html')) loadProfileData(currentUserData);
+
+            if (window.location.pathname.includes('profile.html')) loadProfileData();
         }
     } else {
         const prot = ['dashboard.html', 'project.html', 'media.html', 'profile.html', 'user.html'];
@@ -41,92 +37,84 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
-// Jalankan Visitor View jika di halaman user.html (Tanpa nunggu Auth kelar)
-if (window.location.pathname.includes('user.html')) {
-    const params = new URLSearchParams(window.location.search);
-    const tid = params.get('id');
-    if(tid) loadVisitorView(tid);
+function syncUI() {
+    const ap = document.getElementById('admin-panel'), mp = document.getElementById('member-panel');
+    if(document.getElementById('user-role-badge')) document.getElementById('user-role-badge').innerText = currentUserData.role.toUpperCase();
+    if(document.getElementById('user-credits')) document.getElementById('user-credits').innerText = `$${currentUserData.credits || 0}`;
+    
+    if (currentUserData.role === 'owner') {
+        if(ap) ap.style.display = 'block'; if(mp) mp.style.display = 'none';
+    } else {
+        if(ap) ap.style.display = 'none'; if(mp) mp.style.display = 'block';
+    }
 }
 
-function syncGlobalUI() {
-    const names = document.querySelectorAll('#display-name');
-    names.forEach(n => n.innerText = currentUserData.name);
-    
-    const rb = document.getElementById('user-role-badge');
-    if(rb) { rb.innerText = currentUserData.role.toUpperCase(); rb.className = "badge role-" + currentUserData.role; }
-    
-    const uc = document.getElementById('user-credits');
-    if(uc) uc.innerText = `$${currentUserData.credits || 0}`;
+// ==========================================
+// 🚀 REPOSITORY FIX (Solusi Masalah 1 & 2)
+// ==========================================
+const fOwn = document.getElementById('form-project-owner');
+if(fOwn) fOwn.addEventListener('submit', async e => {
+    e.preventDefault();
+    try {
+        await addDoc(collection(db, "projects"), {
+            title: getVal('own-title'), description: getVal('own-desc'),
+            downloadUrl: getVal('own-download'), status: getVal('own-status'),
+            authorId: currentUserData.uid, authorName: currentUserData.name,
+            createdAt: serverTimestamp()
+        });
+        alert("Berhasil Post!"); location.reload();
+    } catch(err) { alert("Gagal: " + err.message); }
+});
 
-    const ap = document.getElementById('admin-panel');
-    const mp = document.getElementById('member-panel');
-    if(currentUserData.role === 'owner') { if(ap) ap.style.display = 'block'; if(mp) mp.style.display = 'none'; }
-    else { if(ap) ap.style.display = 'none'; if(mp) mp.style.display = 'block'; }
-}
-
-// --- 📡 NEWS SYSTEM (DENGAN MODAL KLIK) ---
-async function loadNews() {
-    const list = document.getElementById('news-list') || document.getElementById('media-news-list');
-    if(!list) return;
-    const snap = await getDocs(query(collection(db, "news"), orderBy("createdAt", "desc")));
+async function loadProjects() {
+    const list = document.getElementById('project-list'); if(!list) return;
+    const snap = await getDocs(query(collection(db, "projects"), orderBy("createdAt", "desc")));
     let h = '';
     snap.forEach(d => {
         const data = d.data();
-        const isPenting = data.type === 'important';
-        h += `
-        <div class="glass card" style="margin-bottom:15px; border-left: 4px solid ${isPenting?'#ef4444':'#3b82f6'}; cursor:${isPenting?'pointer':'default'}" 
-             ${isPenting ? `onclick="window.showNewsDetail('${data.title}','${data.content}','${data.link || ''}')"` : ''}>
-            <div style="display:flex; justify-content:space-between;">
-                <span class="badge" style="background:${isPenting?'#ef4444':'#3b82f6'}">${isPenting?'⚠️ PENTING':'INFO'}</span>
-                <small style="color:gray;">${data.createdAt ? data.createdAt.toDate().toLocaleDateString() : ''}</small>
-            </div>
-            <h3 style="margin:10px 0;">${data.title}</h3>
-            <p style="font-size:0.9rem; color:#ccc;">${data.content.substring(0, 50)}...</p>
-            ${isPenting ? `<small style="color:#ef4444;">Klik untuk baca selengkapnya &rarr;</small>` : ''}
+        h += `<div class="glass card">
+            <h3>${data.title}</h3>
+            <p>${data.description}</p>
+            <a href="${data.downloadUrl}" target="_blank" class="btn btn-primary">Download</a>
+            <small style="display:block;margin-top:10px;color:var(--accent);">By: ${data.authorName}</small>
         </div>`;
     });
-    list.innerHTML = h || '<p>Belum ada berita.</p>';
+    list.innerHTML = h || "<p>Belum ada project.</p>";
 }
 
-window.showNewsDetail = (t, c, l) => {
-    const modal = document.getElementById('news-modal');
-    if(!modal) return;
-    document.getElementById('modal-title').innerText = t;
-    document.getElementById('modal-desc').innerText = c;
-    const btn = document.getElementById('modal-link');
-    if(l) { btn.href = l; btn.style.display = 'block'; } else { btn.style.display = 'none'; }
-    modal.style.display = 'flex';
-};
+// ==========================================
+// 👤 PROFILE FIX (Solusi Masalah 4, 5, 6)
+// ==========================================
+function loadProfileData() {
+    // Sinkronkan ID Input dengan Database
+    const mapping = {
+        'edit-name': 'name', 'edit-phone': 'phone', 'edit-bio': 'bio',
+        'edit-skills': 'skills', 'edit-portfolio': 'portfolio',
+        'edit-avatar-url': 'photoUrl', 'edit-banner-url': 'bannerUrl'
+    };
+    for(let id in mapping) {
+        if(document.getElementById(id)) document.getElementById(id).value = currentUserData[mapping[id]] || "";
+    }
 
-// --- 👤 PROFILE LOGIC (FIX PHOTO & DECO) ---
-function loadProfileData(d) {
-    const fields = { 'edit-name':'name', 'edit-bio':'bio', 'edit-skills':'skills', 'edit-portfolio':'portfolio', 'edit-avatar-url':'photoUrl', 'edit-banner-url':'bannerUrl', 'edit-phone':'phone' };
-    for(let id in fields) { if(document.getElementById(id)) document.getElementById(id).value = d[fields[id]] || ""; }
-
-    const avatar = document.getElementById('display-avatar');
-    if(avatar) avatar.src = d.photoUrl || 'https://via.placeholder.com/150';
-
-    const banner = document.getElementById('display-banner');
-    if(banner) banner.style.backgroundImage = `url('${d.bannerUrl || ''}')`;
-
+    // Tampilkan Foto & Banner (Masalah 4)
+    if(document.getElementById('display-avatar')) document.getElementById('display-avatar').src = currentUserData.photoUrl || '';
+    if(document.getElementById('display-banner')) document.getElementById('display-banner').style.backgroundImage = `url('${currentUserData.bannerUrl || ''}')`;
+    
+    // Tampilkan Dekorasi (Masalah 5)
     const frame = document.getElementById('avatar-frame');
-    if(frame) frame.className = "avatar-wrapper deco-" + (d.decoration || 'none');
+    if(frame) frame.className = "avatar-wrapper deco-" + (currentUserData.decoration || 'none');
 }
 
-// --- 👁️ VISITOR VIEW (user.html) ---
-async function loadVisitorView(uid) {
+const pForm = document.getElementById('profileForm');
+if(pForm) pForm.addEventListener('submit', async e => {
+    e.preventDefault();
     try {
-        const uDoc = await getDoc(doc(db, "users", uid));
-        if(uDoc.exists()){
-            const d = uDoc.data();
-            document.getElementById('v-name').innerText = d.name;
-            document.getElementById('v-bio').innerText = d.bio || "No bio yet.";
-            document.getElementById('v-avatar').src = d.photoUrl || 'https://via.placeholder.com/150';
-            document.getElementById('v-banner').style.backgroundImage = `url('${d.bannerUrl || ''}')`;
-            document.getElementById('v-frame').className = "avatar-wrapper deco-" + (d.decoration || 'none');
-        }
-    } catch(e) { console.error(e); }
-}
-
-// --- LOGOUT ---
-document.getElementById('btnLogout')?.addEventListener('click', () => signOut(auth).then(() => window.location.href = "login.html"));
+        await updateDoc(doc(db, "users", auth.currentUser.uid), {
+            name: getVal('edit-name'), phone: getVal('edit-phone'),
+            bio: getVal('edit-bio'), skills: getVal('edit-skills'),
+            portfolio: getVal('edit-portfolio'), photoUrl: getVal('edit-avatar-url'),
+            bannerUrl: getVal('edit-banner-url')
+        });
+        alert("Profil Berhasil Diupdate!"); location.reload();
+    } catch(err) { alert(err.message); }
+});
