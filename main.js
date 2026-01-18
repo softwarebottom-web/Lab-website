@@ -52,6 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.head.appendChild(style);
 
     // 3. Mobile Menu Toggle (Persiapan jika nanti pakai hamburger menu)
+    // main.js - Sederhana buat menghambat orang awam
+document.addEventListener('contextmenu', event => event.preventDefault()); // Matikan Klik Kanan
+document.onkeydown = function(e) {
+    if(e.keyCode == 123) return false; // Matikan F12
+    if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; // Matikan Ctrl+Shift+I
+};
+
     // Cek apakah ada tombol menu, jika tidak ada, skip errornya
     const menuToggle = document.querySelector('.menu-toggle');
     const navUl = document.querySelector('nav ul');
