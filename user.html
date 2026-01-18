@@ -7,13 +7,15 @@
 </head>
 <body>
     <div id="v-banner" class="profile-banner"></div>
-    <div class="container" style="margin-top: -60px; text-align: center;">
+    <div class="container" style="margin-top: -80px; text-align: center;">
         <div id="v-frame" class="avatar-wrapper">
-            <img id="v-avatar" src="" alt="Avatar">
+            <img id="v-avatar" src="" style="width: 130px; height: 130px; border-radius: 50%; object-fit: cover;">
         </div>
         <h1 id="v-name" style="margin-top: 15px;">Loading...</h1>
-        <p id="v-bio" class="glass card" style="max-width: 500px; margin: 20px auto;"></p>
-        <button onclick="history.back()" class="btn">Kembali</button>
+        <div class="glass card" style="max-width: 600px; margin: 20px auto; padding: 20px;">
+            <p id="v-bio" style="font-style: italic; color: #ccc;"></p>
+        </div>
+        <button onclick="history.back()" class="btn btn-primary">Kembali</button>
     </div>
     <script type="module" src="App.js"></script>
 </body>
