@@ -1,10 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
-    getAuth, 
-    createUserWithEmailAndPassword, 
-    signInWithEmailAndPassword, 
-    onAuthStateChanged, 
-    signOut 
+    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { 
     getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp 
@@ -25,47 +21,41 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let currentUserData = null; // Simpan data user global
-
-console.log("🚀 System Restarted. Login Logic Fixed.");
+let currentUserData = null;
 
 // ==========================================
-// 2. LOGIKA LOGIN (PRIORITAS UTAMA)
+// 🛡️ SECURITY SHIELD (Anti-Maling & Anti-F12)
+// ==========================================
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.onkeydown = function(e) {
+    if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) {
+        return false;
+    }
+};
+
+// ==========================================
+// 🔑 LOGIN LOGIC
 // ==========================================
 const loginForm = document.getElementById('loginForm');
 if (loginForm) {
-    console.log("🔒 Login Form Detected");
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const btn = loginForm.querySelector('button');
-
-        btn.innerText = "Memproses...";
-        btn.disabled = true;
+        btn.innerText = "Memproses..."; btn.disabled = true;
 
         signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                console.log("✅ Login Berhasil:", userCredential.user.email);
-                alert("Login Sukses!");
-                window.location.href = "dashboard.html";
-            })
+            .then(() => { window.location.href = "dashboard.html"; })
             .catch((error) => {
-                console.error("❌ Login Gagal:", error);
-                btn.innerText = "Login";
-                btn.disabled = false;
-                
-                let msg = "Gagal: " + error.message;
-                if(error.code === 'auth/wrong-password') msg = "Password Salah!";
-                if(error.code === 'auth/user-not-found') msg = "Akun tidak ditemukan. Daftar dulu!";
-                alert(msg);
+                btn.innerText = "Login"; btn.disabled = false;
+                alert("Login Gagal: " + error.message);
             });
     });
 }
 
 // ==========================================
-// 3. LOGIKA REGISTRASI (DAPAT $300)
+// 📝 REGISTER LOGIC (Bonus $300)
 // ==========================================
 const registerForm = document.getElementById('registerForm');
 if (registerForm) {
@@ -75,328 +65,223 @@ if (registerForm) {
         btn.innerText = "Mendaftarkan..."; btn.disabled = true;
 
         try {
-            // 1. Buat Akun Auth
             const userCredential = await createUserWithEmailAndPassword(auth, 
                 document.getElementById('reg-email').value, 
                 document.getElementById('reg-password').value
             );
-            
-            // 2. Simpan ke Database + Kredit $300
             await setDoc(doc(db, "users", userCredential.user.uid), {
                 name: document.getElementById('reg-name').value,
                 phone: document.getElementById('reg-phone').value,
                 email: document.getElementById('reg-email').value,
-                role: "member", // Default
-                credits: 300,   // Bonus Awal
+                role: "member",
+                credits: 300,
                 bio: "New Member",
                 joinDate: serverTimestamp()
             });
-
-            alert("✅ Registrasi Berhasil! Anda mendapat saldo awal $300.");
+            alert("✅ Registrasi Berhasil! Saldo $300 telah ditambahkan.");
             window.location.href = "dashboard.html";
         } catch (error) {
-            alert("Gagal Daftar: " + error.message);
-            btn.innerText = "Daftar Sekarang"; btn.disabled = false;
+            alert("Gagal: " + error.message);
+            btn.innerText = "Daftar"; btn.disabled = false;
         }
     });
 }
 
 // ==========================================
-// 4. CEK USER & DASHBOARD LOGIC
+// 🔄 AUTH STATE & DATA SYNC
 // ==========================================
 onAuthStateChanged(auth, async (user) => {
-    // Cek halaman saat ini
     const isDashboard = document.getElementById('project-list'); 
+    const isMedia = document.getElementById('media-news-list');
+    const isProfile = window.location.pathname.includes('profile');
     
     if (user) {
-        console.log("👤 User Active:", user.email);
-
-        // Ambil Data Lengkap User (Role & Kredit)
         try {
             const userDoc = await getDoc(doc(db, "users", user.uid));
             if (userDoc.exists()) {
                 currentUserData = userDoc.data();
                 currentUserData.uid = user.uid;
 
-                // --- UPDATE UI DASHBOARD ---
-                if (isDashboard) {
-                    // Update Badge Role
-                    const badge = document.getElementById('user-role-badge');
-                    if(badge) badge.innerText = currentUserData.role.toUpperCase();
+                // Update UI Element yang ada di layar
+                if(document.getElementById('user-role-badge')) document.getElementById('user-role-badge').innerText = currentUserData.role.toUpperCase();
+                if(document.getElementById('user-credits')) document.getElementById('user-credits').innerText = `$${currentUserData.credits || 0}`;
 
-                    // Update Saldo Kredit
-                    const creditDisplay = document.getElementById('user-credits');
-                    if(creditDisplay) creditDisplay.innerText = `$${currentUserData.credits || 0}`;
+                // Tampilkan Panel sesuai Role
+                const adminPanel = document.getElementById('admin-panel');
+                const memberPanel = document.getElementById('member-panel');
+                if (currentUserData.role === 'owner') {
+                    if(adminPanel) adminPanel.style.display = 'block';
+                } else {
+                    if(memberPanel) memberPanel.style.display = 'block';
+                }
 
-                    // Tampilkan Panel (Owner vs Member)
-                    const adminPanel = document.getElementById('admin-panel');
-                    const memberPanel = document.getElementById('member-panel');
-
-                    if (currentUserData.role === 'owner') {
-                        if(adminPanel) adminPanel.style.display = 'block';
-                    } else {
-                        if(memberPanel) memberPanel.style.display = 'block';
-                    }
-
-                    // Load Data Project & News
+                if (isDashboard || isMedia) {
                     loadProjects();
                     loadNews();
                 }
-                
-                // --- UPDATE UI PROFILE ---
-                if (window.location.pathname.includes('profile')) loadProfileData(currentUserData);
+                if (isProfile) loadProfileData(currentUserData);
             }
-        } catch (e) {
-            console.error("Error Get User Data:", e);
-        }
-
+        } catch (e) { console.error("Error Fetch User:", e); }
     } else {
-        // Jika tidak login, tendang dari halaman dashboard
         const protectedPages = ['dashboard.html', 'project.html', 'media.html', 'profile.html'];
-        const currentPage = window.location.pathname.split("/").pop();
-        if (protectedPages.some(p => currentPage.includes(p))) {
-            window.location.href = "login.html";
-        }
+        if (protectedPages.some(p => window.location.pathname.includes(p))) window.location.href = "login.html";
     }
 });
 
 // ==========================================
-// 5. FITUR PROJECT (DEPLOY & DELETE)
+// 🚀 REPOSITORY SYSTEM (Projects)
 // ==========================================
-
-// A. LOAD PROJECTS
 async function loadProjects() {
     const list = document.getElementById('project-list');
     if(!list) return;
 
-    list.innerHTML = '<p style="text-align:center;">🔄 Memuat Repository...</p>';
-
     try {
         const q = query(collection(db, "projects"), orderBy("createdAt", "desc"));
         const snapshot = await getDocs(q);
-        
-        if (snapshot.empty) {
-            list.innerHTML = '<p style="text-align:center;">Belum ada project.</p>';
-            return;
-        }
-
         let html = '';
+        
         snapshot.forEach(docSnap => {
             const data = docSnap.data();
             const pid = docSnap.id;
             const isOwner = currentUserData && currentUserData.role === 'owner';
-            
-            // Tombol Delete (Hanya Owner)
-            const deleteBtn = isOwner 
-                ? `<button onclick="window.deleteProject('${pid}')" class="btn-delete" style="float:right; margin-left:10px;">Hapus 🗑️</button>` 
-                : '';
+            const deleteBtn = isOwner ? `<button onclick="window.deleteProject('${pid}')" class="btn-delete" style="float:right;">Hapus 🗑️</button>` : '';
 
             html += `
                 <div class="glass card" style="margin-bottom: 20px; border-left: 4px solid ${data.byRole === 'owner' ? '#38bdf8' : '#10b981'};">
                     <div style="display:flex; justify-content:space-between;">
-                        <h3 style="font-size:1.1rem;">${data.title}</h3>
-                        <span style="font-size:0.7rem; background:rgba(255,255,255,0.1); padding:2px 8px; border-radius:10px;">
-                            ${data.byRole === 'owner' ? 'OFFICIAL' : 'MEMBER'}
-                        </span>
+                        <h3>${data.title}</h3>
+                        <span class="badge">${data.byRole === 'owner' ? 'OFFICIAL' : 'MEMBER'}</span>
                     </div>
                     <p style="font-size:0.9rem; color:#ccc; margin:5px 0;">${data.description}</p>
                     <div style="margin-top:10px;">
                         ${deleteBtn}
-                        <a href="${data.downloadUrl}" target="_blank" class="btn btn-primary" style="padding:4px 10px; font-size:0.8rem;">Download</a>
+                        <a href="${data.downloadUrl}" target="_blank" class="btn btn-primary">Download</a>
                     </div>
                 </div>`;
         });
-        list.innerHTML = html;
-    } catch (e) { list.innerHTML = "Gagal memuat: " + e.message; }
+        list.innerHTML = html || '<p>Repository Kosong.</p>';
+    } catch (e) { console.error(e); }
 }
 
-// B. DEPLOY OWNER (GRATIS)
+// Deploy Logic
 const formOwner = document.getElementById('form-project-owner');
 if(formOwner) {
     formOwner.addEventListener('submit', async (e) => {
         e.preventDefault();
-        await deployProject({
+        await addDoc(collection(db, "projects"), {
             title: document.getElementById('own-title').value,
             description: document.getElementById('own-desc').value,
-            type: document.getElementById('own-type').value,
-            status: document.getElementById('own-status').value,
-            demoUrl: document.getElementById('own-demo').value,
             downloadUrl: document.getElementById('own-download').value,
-            byRole: 'owner'
+            byRole: 'owner',
+            createdAt: serverTimestamp()
         });
-        formOwner.reset();
+        alert("Official Project Berhasil!"); location.reload();
     });
 }
 
-// C. DEPLOY MEMBER (BAYAR $50)
 const formMember = document.getElementById('form-project-member');
 if(formMember) {
     formMember.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const cost = 50;
-
-        // Cek Saldo
-        if (currentUserData.credits < cost) {
-            alert(`Saldo Kurang! Anda butuh $${cost}, saldo cuma $${currentUserData.credits}.`);
-            return;
-        }
-
-        const confirmPay = confirm(`Deploy project akan memotong saldo $${cost}. Lanjut?`);
-        if(!confirmPay) return;
+        if (currentUserData.credits < 50) return alert("Saldo tidak cukup ($50 diperlukan)");
+        if (!confirm("Konfirmasi pembayaran $50 untuk deploy?")) return;
 
         try {
-            // 1. Potong Saldo di Database
-            const newCredits = currentUserData.credits - cost;
+            const newCredits = currentUserData.credits - 50;
             await updateDoc(doc(db, "users", currentUserData.uid), { credits: newCredits });
-            
-            // 2. Update Tampilan
-            document.getElementById('user-credits').innerText = `$${newCredits}`;
-            currentUserData.credits = newCredits; 
-
-            // 3. Upload Project
-            await deployProject({
+            await addDoc(collection(db, "projects"), {
                 title: document.getElementById('mem-title').value,
                 description: document.getElementById('mem-desc').value,
-                type: document.getElementById('mem-type').value,
-                status: 'unlocked',
-                demoUrl: document.getElementById('mem-demo').value,
                 downloadUrl: document.getElementById('mem-download').value,
                 byRole: 'member',
-                uploaderName: currentUserData.name
+                createdAt: serverTimestamp()
             });
-            formMember.reset();
-        } catch (e) { alert("Gagal Transaksi: " + e.message); }
+            alert("Project Member Berhasil!"); location.reload();
+        } catch (e) { alert(e.message); }
     });
 }
 
-async function deployProject(data) {
-    try {
-        await addDoc(collection(db, "projects"), {
-            ...data,
-            createdAt: serverTimestamp()
-        });
-        alert("✅ Project Berhasil Diupload!");
-        loadProjects();
-    } catch(e) { alert("Error: " + e.message); }
-}
-
-// D. FUNGSI DELETE (GLOBAL)
 window.deleteProject = async (id) => {
-    if(!confirm("Hapus project ini secara permanen?")) return;
-    try {
+    if(confirm("Hapus project ini secara permanen?")) {
         await deleteDoc(doc(db, "projects", id));
-        alert("Project dihapus.");
         loadProjects();
-    } catch(e) { alert("Gagal hapus: " + e.message); }
-}
+    }
+};
 
 // ==========================================
-// 6. NEWS SYSTEM (POPUP MODAL)
+// 📡 NEWS & BROADCAST SYSTEM
 // ==========================================
 async function loadNews() {
-    const list = document.getElementById('news-list');
+    const list = document.getElementById('news-list') || document.getElementById('media-news-list');
     if(!list) return;
 
     const q = query(collection(db, "news"), orderBy("createdAt", "desc"));
     const snap = await getDocs(q);
-    
     let html = '';
+
     snap.forEach(doc => {
         const d = doc.data();
-        const isImportant = d.type === 'important';
-        const badgeClass = isImportant ? 'badge-important' : 'badge-general';
-        const itemClass = isImportant ? 'news-item-important' : '';
-        const badgeText = isImportant ? '⚠️ PENTING' : 'INFO';
-        
-        // Escape string agar tidak error di onclick
-        const safeTitle = d.title.replace(/'/g, "&apos;");
-        const safeDesc = d.content.replace(/'/g, "&apos;");
-        const safeLink = d.link || '#';
-        const clickEvent = isImportant ? `onclick="window.openNewsModal('${safeTitle}', '${safeDesc}', '${safeLink}')"` : '';
+        const isImp = d.type === 'important';
+        const click = isImp ? `onclick="window.openNewsModal('${d.title.replace(/'/g, "")}', '${d.content.replace(/'/g, "")}', '${d.link || "#"}')"` : '';
 
         html += `
-            <div class="glass card ${itemClass}" ${clickEvent} style="margin-bottom:15px; padding:15px; border-left: 3px solid #64748b;">
+            <div class="glass card ${isImp ? 'news-item-important' : ''}" ${click} style="margin-bottom:15px; cursor:pointer; padding:15px;">
                 <div style="display:flex; align-items:center;">
-                    <span class="news-badge ${badgeClass}">${badgeText}</span>
-                    <h4 style="margin:0; font-size:0.9rem;">${d.title}</h4>
+                    <span class="news-badge ${isImp ? 'badge-important' : 'badge-general'}">${isImp ? '⚠️ PENTING' : 'INFO'}</span>
+                    <h4 style="margin:0; font-size:1rem;">${d.title}</h4>
                 </div>
-                ${!isImportant ? `<p style="margin-top:5px; font-size:0.8rem; color:#aaa;">${d.content}</p>` : ''}
-                ${isImportant ? `<small style="color:#ef4444; font-size:0.7rem; margin-top:5px; display:block;">Klik untuk detail & link</small>` : ''}
+                ${!isImp ? `<p style="margin-top:8px; font-size:0.85rem; color:#aaa;">${d.content}</p>` : '<small style="color:red; display:block; margin-top:5px;">Klik untuk detail</small>'}
             </div>`;
     });
-    list.innerHTML = html;
+    list.innerHTML = html || '<p>Belum ada berita.</p>';
 }
 
-// Broadcast News (Owner)
 const formNews = document.getElementById('form-news');
 if(formNews) {
     formNews.addEventListener('submit', async (e) => {
         e.preventDefault();
-        try {
-            await addDoc(collection(db, "news"), {
-                title: document.getElementById('news-title').value,
-                content: document.getElementById('news-content').value,
-                type: document.getElementById('news-type').value,
-                link: document.getElementById('news-link').value,
-                createdAt: serverTimestamp()
-            });
-            alert("Informasi Terkirim!");
-            formNews.reset();
-            loadNews();
-        } catch(e) { alert(e.message); }
+        await addDoc(collection(db, "news"), {
+            title: document.getElementById('news-title').value,
+            content: document.getElementById('news-content').value,
+            type: document.getElementById('news-type').value,
+            link: document.getElementById('news-link').value,
+            createdAt: serverTimestamp()
+        });
+        alert("Broadcast Terkirim!"); formNews.reset(); loadNews();
     });
 }
 
-// Fungsi Buka Modal (Global)
-window.openNewsModal = (title, desc, link) => {
-    document.getElementById('modal-title').innerText = title;
-    document.getElementById('modal-desc').innerText = desc;
-    const btnLink = document.getElementById('modal-link');
-    
-    if(link && link !== '#') {
-        btnLink.href = link;
-        btnLink.style.display = 'block';
-    } else {
-        btnLink.style.display = 'none';
-    }
+window.openNewsModal = (t, d, l) => {
+    if(!document.getElementById('news-modal')) return;
+    document.getElementById('modal-title').innerText = t;
+    document.getElementById('modal-desc').innerText = d;
+    const btn = document.getElementById('modal-link');
+    if(l && l !== '#') { btn.href = l; btn.style.display = 'block'; } else { btn.style.display = 'none'; }
     document.getElementById('news-modal').style.display = 'flex';
-}
+};
 
 // ==========================================
-// 7. PROFILE & LOGOUT
+// 👤 PROFILE SYSTEM
 // ==========================================
 function loadProfileData(data) {
-    // Isi Form Profile jika ada
-    if(document.getElementById('edit-name')) {
-        document.getElementById('edit-name').value = data.name || "";
-        document.getElementById('edit-phone').value = data.phone || "";
-        document.getElementById('edit-bio').value = data.bio || "";
-        document.getElementById('edit-avatar-url').value = data.photoUrl || "";
-        document.getElementById('edit-banner-url').value = data.bannerUrl || "";
-        document.getElementById('edit-skills').value = data.skills || "";
-    }
-    // Update Tampilan Profile
-    if(document.getElementById('display-name')) {
-        document.getElementById('display-name').innerText = data.name || "User";
-        document.getElementById('display-role').innerText = (data.role || "MEMBER").toUpperCase();
-        document.getElementById('display-bio').innerText = data.bio || "-";
-        if(data.photoUrl) document.getElementById('display-avatar').src = data.photoUrl;
-        if(data.bannerUrl) document.getElementById('display-banner').style.backgroundImage = `url('${data.bannerUrl}')`;
-        const skillsBox = document.getElementById('display-skills');
-        if(skillsBox && data.skills) {
-            skillsBox.innerHTML = '';
-            data.skills.split(',').forEach(s => { if(s.trim()) skillsBox.innerHTML += `<span class="skill-tag">${s.trim()}</span>`; });
+    const ids = ['edit-name', 'edit-phone', 'edit-bio', 'edit-avatar-url', 'edit-banner-url', 'edit-skills'];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) {
+            const key = id.split('-')[1] === 'avatar' ? 'photoUrl' : (id.split('-')[1] === 'banner' ? 'bannerUrl' : id.split('-')[1]);
+            el.value = data[key] || "";
         }
-    }
+    });
+
+    if(document.getElementById('display-name')) document.getElementById('display-name').innerText = data.name || "User";
+    if(document.getElementById('display-avatar') && data.photoUrl) document.getElementById('display-avatar').src = data.photoUrl;
 }
 
-// Simpan Profile
 const profileForm = document.getElementById('profileForm');
 if(profileForm) {
     profileForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const user = auth.currentUser;
-        if(!user) return;
         try {
             await updateDoc(doc(db, "users", user.uid), {
                 name: document.getElementById('edit-name').value,
@@ -406,14 +291,12 @@ if(profileForm) {
                 bannerUrl: document.getElementById('edit-banner-url').value,
                 skills: document.getElementById('edit-skills').value
             });
-            alert("✅ Profil Update!");
-            location.reload();
+            alert("✅ Profil Diperbarui!"); location.reload();
         } catch (e) { alert("Gagal: " + e.message); }
     });
 }
 
-// Logout
-document.getElementById('btnLogout')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    signOut(auth).then(() => window.location.href="index.html");
+// 🚪 LOGOUT
+document.getElementById('btnLogout')?.addEventListener('click', () => {
+    signOut(auth).then(() => { window.location.href="index.html"; });
 });
