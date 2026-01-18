@@ -348,25 +348,51 @@ body {
     user-select: none;
 }
 
-/* Dekorasi Premium */
-.deco-neon {
-    border: 3px solid #5865F2 !important;
-    box-shadow: 0 0 20px #5865F2 !important;
+/* Wrapper untuk Avatar agar dekorasi tidak berantakan */
+.avatar-wrapper {
     position: relative;
-}
-.deco-neon::before {
-    content: "PREMIUM";
-    position: absolute;
-    top: -10px;
-    right: 10px;
-    background: #5865F2;
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 5px;
-    color: white;
+    display: inline-block;
+    padding: 5px;
+    border-radius: 50%;
 }
 
-.deco-gold {
-    border: 3px solid #FFD700 !important;
-    box-shadow: 0 0 20px #FFD700 !important;
+/* Dekorasi 1: Blue Neon */
+.deco-neon { border: 3px solid #00d2ff; box-shadow: 0 0 15px #00d2ff; }
+/* Dekorasi 2: Gold VIP */
+.deco-gold { border: 3px solid #ffd700; box-shadow: 0 0 15px #ffd700; }
+/* Dekorasi 3: Ruby Red (Premium) */
+.deco-ruby { border: 3px solid #ff0055; box-shadow: 0 0 15px #ff0055; }
+/* Dekorasi 4: Emerald Green */
+.deco-emerald { border: 3px solid #00ff88; box-shadow: 0 0 15px #00ff88; }
+/* Dekorasi 5: Purple Galaxy */
+.deco-galaxy { border: 3px solid #a020f0; box-shadow: 0 0 20px #a020f0; animation: pulse 2s infinite; }
+
+@keyframes pulse {
+    0% { opacity: 0.8; }
+    50% { opacity: 1; box-shadow: 0 0 30px #a020f0; }
+    100% { opacity: 0.8; }
 }
+
+/* Container avatar untuk menampung dekorasi */
+#avatar-frame.deco-neon { border: 3px solid #5865F2; box-shadow: 0 0 15px #5865F2; }
+#avatar-frame.deco-gold { border: 3px solid #FFD700; box-shadow: 0 0 15px #FFD700; }
+#avatar-frame.deco-galaxy { border: 3px solid #a020f0; box-shadow: 0 0 20px #a020f0; animation: pulse 2s infinite; }
+#avatar-frame.deco-emerald { border: 3px solid #00ff88; box-shadow: 0 0 15px #00ff88; }
+
+/* Tombol Toko */
+.btn-shop {
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+    background: rgba(255,255,255,0.05);
+    transition: 0.3s;
+}
+.btn-shop:hover { transform: translateY(-3px); background: rgba(255,255,255,0.15); }
+
+.deco-neon-preview { border-left: 4px solid #5865F2; }
+.deco-gold-preview { border-left: 4px solid #FFD700; }
+.deco-galaxy-preview { border-left: 4px solid #a020f0; }
+.deco-emerald-preview { border-left: 4px solid #00ff88; }

@@ -1,1 +1,205 @@
-import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getAuth,setPersistence,browserLocalPersistence,onAuthStateChanged,signOut,signInWithEmailAndPassword}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";import{getFirestore,collection,addDoc,getDocs,doc,getDoc,setDoc,updateDoc,deleteDoc,query,orderBy,serverTimestamp,where}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";const firebaseConfig={apiKey:"AIzaSyCtOhGoiGPHYUgyERjg43pt6_QW-gBjhL4",authDomain:"laboratorium-b4253.firebaseapp.com",projectId:"laboratorium-b4253",storageBucket:"laboratorium-b4253.firebasestorage.app",messagingSenderId:"752575889923",appId:"1:752575889923:web:c0a2fefe62981209c7c436"};const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);let currentUserData=null;document.addEventListener("contextmenu",e=>e.preventDefault());document.onkeydown=e=>{if(e.keyCode==123||(e.ctrlKey&&e.shiftKey&&(e.keyCode==73||e.keyCode==74||e.keyCode==67))||(e.ctrlKey&&e.keyCode==85))return false};const getSafeVal=e=>{const t=document.getElementById(e);return t?t.value:""};onAuthStateChanged(auth,async e=>{const t=document.getElementById("project-list"),a=document.getElementById("media-news-list");if(e){const n=await getDoc(doc(db,"users",e.uid));if(n.exists()){currentUserData={...n.data(),uid:e.uid};if(document.getElementById("user-role-badge"))document.getElementById("user-role-badge").innerText=currentUserData.role.toUpperCase();if(document.getElementById("user-credits"))document.getElementById("user-credits").innerText=`$${currentUserData.credits||0}`;loadProjects();loadNews();if(window.location.pathname.includes("profile"))loadProfileData(currentUserData)}}else{if(["dashboard.html","project.html","media.html","profile.html"].some(t=>window.location.pathname.includes(t)))window.location.href="login.html"}});async function loadProjects(){const e=document.getElementById("project-list");if(!e)return;const t=query(collection(db,"projects"),orderBy("createdAt","desc")),a=await getDocs(t);let n="";a.forEach(e=>{const t=e.data(),a=e.id,o="owner"===currentUserData?.role;if("private"===t.status&&!o)return;n+=`<div class="glass card project-item" onclick="viewProjectDetail('${a}')" style="cursor:pointer;margin-bottom:15px;"><div style="display:flex;justify-content:space-between;align-items:center;"><h3>${t.title} ${"private"===t.status?"🔒":"🌍"}</h3>${o?`<select onchange="window.updateStatus('${a}',this.value)" onclick="event.stopPropagation()" style="background:#222;color:white;border:none;border-radius:4px;"><option value="public" ${"public"===t.status?"selected":""}>Public</option><option value="private" ${"private"===t.status?"selected":""}>Private</option></select>`:""}</div><p style="color:#aaa;font-size:0.9rem;margin:10px 0;">${t.description.substring(0,60)}...</p><small style="background:rgba(255,255,255,.1);padding:2px 8px;border-radius:4px;">${"deploy"===t.type?"📦 ZIP/Deploy":"🔗 GitHub"}</small></div>`});e.innerHTML=n||"<p>Belum ada project.</p>"}window.viewProjectDetail=async e=>{const t=await getDoc(doc(db,"projects",e));if(!t.exists())return;const a=t.data(),n=document.getElementById("project-modal");if(!n)return alert("Deskripsi: "+a.description);document.getElementById("m-title").innerText=a.title;document.getElementById("m-desc").innerText=a.description;const o=document.getElementById("m-download");o.href=a.downloadUrl;o.innerText="deploy"===a.type?"Download Zip 📂":"View Source 🔗";n.style.display="flex"};window.updateStatus=async(e,t)=>{try{await updateDoc(doc(db,"projects",e),{status:t});alert("Status Update ke "+t);loadProjects()}catch(e){alert(e.message)}};function loadProfileData(e){const t=["edit-name","edit-phone","edit-bio","edit-skills","edit-portfolio","edit-avatar-url","edit-banner-url"];t.forEach(t=>{const a=document.getElementById(t);if(a){const n=t.includes("avatar")?"photoUrl":t.includes("banner")?"bannerUrl":t.split("-")[1];a.value=e[n]||""}});if(document.getElementById("display-name"))document.getElementById("display-name").innerText=e.name||"User";if(document.getElementById("display-bio"))document.getElementById("display-bio").innerText=e.bio||"No bio yet.";if(document.getElementById("display-avatar"))document.getElementById("display-avatar").src=e.photoUrl||"";if(document.getElementById("display-banner")){document.getElementById("display-banner").style.backgroundImage=`url('${e.bannerUrl}')`;document.getElementById("display-banner").style.backgroundSize="cover"}const a=document.getElementById("profile-card-container");if(a&&e.decoration)a.className="glass card deco-"+e.decoration}window.buyDecoration=async e=>{const t=100;if(currentUserData.credits<t)return alert("Kredit Kurang! Butuh $100.");if(confirm("Gunakan $100 untuk dekorasi profile?")){await updateDoc(doc(db,"users",currentUserData.uid),{credits:currentUserData.credits-t,decoration:e});alert("Dekorasi Berhasil Dibeli!");location.reload()}};const pF=document.getElementById("profileForm");if(pF)pF.addEventListener("submit",async e=>{e.preventDefault();try{await updateDoc(doc(db,"users",auth.currentUser.uid),{name:getSafeVal("edit-name"),phone:getSafeVal("edit-phone"),bio:getSafeVal("edit-bio"),skills:getSafeVal("edit-skills"),portfolio:getSafeVal("edit-portfolio"),photoUrl:getSafeVal("edit-avatar-url"),bannerUrl:getSafeVal("edit-banner-url")});alert("✅ Profil Diperbarui!");location.reload()}catch(e){alert(e.message)}});window.deleteProject=async e=>{if(confirm("Hapus?")){await deleteDoc(doc(db,"projects",e));loadProjects()}};document.getElementById("btnLogout")?.addEventListener("click",()=>signOut(auth).then(()=>window.location.href="index.html"));async function loadNews(){const e=document.getElementById("news-list")||document.getElementById("media-news-list");if(!e)return;const t=query(collection(db,"news"),orderBy("createdAt","desc")),a=await getDocs(t);let n="";a.forEach(e=>{const t=e.data(),a="important"===t.type;n+=`<div class="glass card" style="margin-bottom:10px;cursor:pointer;" ${a?`onclick="window.openNewsModal('${t.title}','${t.content}','${t.link||"#"}')"`:""}><small class="${a?"badge-important":"badge-general"}">${a?"PENTING":"INFO"}</small><h4 style="margin:5px 0;">${t.title}</h4></div>`});e.innerHTML=n}
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, signOut, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// --- KONFIGURASI FIREBASE ---
+const firebaseConfig = { 
+    apiKey: "AIzaSyCtOhGoiGPHYUgyERjg43pt6_QW-gBjhL4", 
+    authDomain: "laboratorium-b4253.firebaseapp.com", 
+    projectId: "laboratorium-b4253", 
+    storageBucket: "laboratorium-b4253.firebasestorage.app", 
+    messagingSenderId: "752575889923", 
+    appId: "1:752575889923:web:c0a2fefe62981209c7c436" 
+};
+
+const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
+let currentUserData = null;
+
+// Keamanan: Anti F12 & Klik Kanan
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.onkeydown = e => { if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false; };
+
+const getSafeVal = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
+
+// ==========================================
+// 🔄 AUTH STATE & PANEL CONTROL
+// ==========================================
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        try {
+            const uDoc = await getDoc(doc(db, "users", user.uid));
+            if (uDoc.exists()) {
+                currentUserData = { ...uDoc.data(), uid: user.uid };
+
+                // Cek Status BAN
+                if(currentUserData.status === 'banned') {
+                    alert("Akses Ditolak: Akun Anda telah di-BAN oleh Owner.");
+                    signOut(auth).then(() => window.location.href = "login.html");
+                    return;
+                }
+
+                // UI Sync (Badge & Kredit)
+                if(document.getElementById('user-role-badge')) document.getElementById('user-role-badge').innerText = currentUserData.role.toUpperCase();
+                if(document.getElementById('user-credits')) document.getElementById('user-credits').innerText = `$${currentUserData.credits || 0}`;
+
+                // Panel Visibility (Fix: Munculkan Panel yang Hilang)
+                const ap = document.getElementById('admin-panel'), mp = document.getElementById('member-panel');
+                if (currentUserData.role === 'owner') {
+                    if(ap) ap.style.display = 'block';
+                    if(mp) mp.style.display = 'none';
+                } else {
+                    if(ap) ap.style.display = 'none';
+                    if(mp) mp.style.display = 'block';
+                }
+
+                loadProjects();
+                loadNews();
+                if (window.location.pathname.includes('profile')) loadProfileData(currentUserData);
+            }
+        } catch (e) { console.error("Sync Error:", e); }
+    } else {
+        const prot = ['dashboard.html', 'project.html', 'media.html', 'profile.html'];
+        if (prot.some(p => window.location.pathname.includes(p))) window.location.href = "login.html";
+    }
+});
+
+// ==========================================
+// 🚀 REPOSITORY SYSTEM (Owner can view Private)
+// ==========================================
+async function loadProjects() {
+    const list = document.getElementById('project-list'); if(!list) return;
+    const q = query(collection(db, "projects"), orderBy("createdAt", "desc"));
+    const snap = await getDocs(q); 
+    let h = '';
+    
+    snap.forEach(d => {
+        const data = d.data();
+        const isOwner = currentUserData?.role === 'owner';
+        
+        // Filter: Project Private Hanya untuk Owner
+        if (data.status === 'locked' && !isOwner) return;
+
+        h += `
+        <div class="glass card project-item" style="margin-bottom:15px; border-left: 4px solid ${data.byRole === 'owner' ? '#38bdf8' : '#10b981'};">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3>${data.title} ${data.status === 'locked' ? '🔒' : '🌍'}</h3>
+                ${isOwner ? `<button onclick="window.deleteProject('${d.id}')" class="btn-delete">Hapus</button>` : ''}
+            </div>
+            <p style="color:#aaa; font-size:0.9rem; margin:10px 0;">${data.description}</p>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <small style="color:#38bdf8; cursor:pointer;" onclick="alert('UID Author: ${data.authorId}')">Author: ${data.authorName || 'System'}</small>
+                <a href="${data.downloadUrl}" target="_blank" class="btn btn-primary" style="padding:4px 12px; font-size:0.8rem;">Download</a>
+            </div>
+        </div>`;
+    });
+    list.innerHTML = h || '<p>Belum ada repository.</p>';
+}
+
+// Deploy Owner (Unlimited & Free)
+const fOwn = document.getElementById('form-project-owner');
+if(fOwn) fOwn.addEventListener('submit', async e => {
+    e.preventDefault();
+    await addDoc(collection(db, "projects"), {
+        title: getSafeVal('own-title'),
+        description: getSafeVal('own-desc'),
+        type: getSafeVal('own-type'),
+        status: getSafeVal('own-status'),
+        demoUrl: getSafeVal('own-demo'),
+        downloadUrl: getSafeVal('own-download'),
+        byRole: 'owner',
+        authorId: currentUserData.uid,
+        authorName: currentUserData.name,
+        createdAt: serverTimestamp()
+    });
+    alert("Project Deployed!"); location.reload();
+});
+
+// Deploy Member (Cost $50)
+const fMem = document.getElementById('form-project-member');
+if(fMem) fMem.addEventListener('submit', async e => {
+    e.preventDefault();
+    if(currentUserData.credits < 50) return alert("Kredit Kurang!");
+    if(confirm("Bayar $50 untuk deploy?")) {
+        await updateDoc(doc(db, "users", currentUserData.uid), { credits: currentUserData.credits - 50 });
+        await addDoc(collection(db, "projects"), {
+            title: getSafeVal('mem-title'),
+            description: getSafeVal('mem-desc'),
+            type: getSafeVal('mem-type'),
+            status: 'unlocked',
+            downloadUrl: getSafeVal('mem-download'),
+            byRole: 'member',
+            authorId: currentUserData.uid,
+            authorName: currentUserData.name,
+            createdAt: serverTimestamp()
+        });
+        alert("Deploy Berhasil!"); location.reload();
+    }
+});
+
+// ==========================================
+// 👤 PROFILE & DECORATION (Permanent Save)
+// ==========================================
+function loadProfileData(d) {
+    if(document.getElementById('edit-name')) document.getElementById('edit-name').value = d.name || "";
+    // ... load field lainnya
+    
+    // Pasang Dekorasi Secara Permanen
+    const container = document.getElementById('profile-card-container');
+    if(container && d.decoration) container.className = "glass card deco-" + d.decoration;
+}
+
+window.buyDecoration = async (decoId) => {
+    const price = 100;
+    if (currentUserData.credits < price) return alert("Kredit Kurang!");
+    if (confirm(`Beli dekorasi seharga $${price}?`)) {
+        await updateDoc(doc(db, "users", currentUserData.uid), {
+            credits: currentUserData.credits - price,
+            decoration: decoId // Tersimpan permanen di DB
+        });
+        alert("Dekorasi Berhasil Disimpan!");
+        location.reload();
+    }
+};
+
+// ==========================================
+// ⚖️ MODERASI (Ban & Warning)
+// ==========================================
+window.handleModeration = async (uid, action) => {
+    const userRef = doc(db, "users", uid);
+    if(action === 'ban') {
+        await updateDoc(userRef, { status: 'banned' });
+        alert("Member telah di-BAN permanen.");
+    } else {
+        const u = await getDoc(userRef);
+        const nw = (u.data().warnings || 0) + 1;
+        await updateDoc(userRef, { warnings: nw });
+        alert(`Warning terkirim. Total: ${nw}`);
+    }
+};
+
+// ==========================================
+// 📡 BROADCAST & MODAL
+// ==========================================
+async function loadNews() {
+    const list = document.getElementById('news-list'); if(!list) return;
+    const q = query(collection(db, "news"), orderBy("createdAt", "desc"));
+    const snap = await getDocs(q); let h = '';
+    snap.forEach(d => {
+        const data = d.data(); const isI = data.type === 'important';
+        h += `<div class="glass card" style="margin-bottom:10px; cursor:pointer;" ${isI ? `onclick="window.openNewsModal('${data.title}','${data.content}','${data.link}')"` : ''}>
+            <small class="${isI ? 'badge-important' : 'badge-general'}">${isI ? '⚠️ PENTING' : 'INFO'}</small>
+            <h4 style="margin:5px 0;">${data.title}</h4></div>`;
+    });
+    list.innerHTML = h;
+}
+
+window.openNewsModal = (t, d, l) => {
+    document.getElementById('modal-title').innerText = t;
+    document.getElementById('modal-desc').innerText = d;
+    const btn = document.getElementById('modal-link');
+    btn.href = l || "#"; btn.style.display = l ? 'block' : 'none';
+    document.getElementById('news-modal').style.display = 'flex';
+};
+
+window.deleteProject = async (id) => { if(confirm("Hapus?")) { await deleteDoc(doc(db, "projects", id)); loadProjects(); } };
+document.getElementById('btnLogout')?.addEventListener('click', () => signOut(auth).then(()=>window.location.href="index.html"));

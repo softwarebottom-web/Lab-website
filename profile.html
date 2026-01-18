@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>My Profile</title>
+    <title>Settings - Archive Lab</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -18,73 +18,39 @@
         </ul>
     </nav>
 
-    <div class="container" style="max-width: 900px;">
+    <div class="container" style="max-width: 800px;">
         
-        <div class="glass card" style="padding: 0; overflow: visible; margin-bottom: 30px;">
-            <div class="profile-header">
-                <div id="display-banner" class="profile-banner"></div>
-                <div class="profile-picture-container">
-                    <img id="display-avatar" src="https://ui-avatars.com/api/?name=User" class="profile-picture-img" alt="Profile">
-                </div>
-            </div>
-
-<div id="profile-card-container" class="glass card">
-    <div id="display-banner" style="height:150px; border-radius:10px 10px 0 0; background-position:center;"></div>
-    <div style="padding:20px; text-align:center; position:relative;">
-        <img id="display-avatar" src="" style="width:100px; height:100px; border-radius:50%; border:4px solid #333; margin-top:-70px;">
-        <h2 id="display-name">Loading...</h2>
-        <p id="display-bio" style="color:#aaa;"></p>
-        <div id="user-role-badge" class="badge">MEMBER</div>
-        <div id="user-credits" style="color:#10b981; font-weight:bold; margin-top:5px;">$0</div>
-    </div>
-</div>
-
-<form id="profileForm" class="glass card" style="margin-top:20px; padding:20px;">
-    <h3>Edit Profile</h3>
-    <input type="text" id="edit-name" placeholder="Nama Lengkap" required>
-    <input type="text" id="edit-phone" placeholder="No. WhatsApp">
-    <textarea id="edit-bio" placeholder="Tulis bio singkat..."></textarea>
-    <input type="text" id="edit-skills" placeholder="Keahlian (Contoh: Web Dev, UI/UX)">
-    <input type="url" id="edit-portfolio" placeholder="Link Portofolio (Contoh: linktree/github)">
-    <input type="url" id="edit-avatar-url" placeholder="Link Foto Profil (URL)">
-    <input type="url" id="edit-banner-url" placeholder="Link Banner GIF (URL Animasi)">
-    
-    <button type="submit" class="btn-primary" style="width:100%; margin-top:15px;">Simpan Perubahan</button>
-</form>
-
-<div class="glass card" style="margin-top:20px; padding:20px;">
-    <h3>Premium Decoration</h3>
-    <p style="font-size:0.8rem; color:#aaa;">Harga: $100 per dekorasi</p>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-        <button onclick="buyDecoration('neon')" style="background:#5865F2; color:white; border:none; padding:10px; border-radius:5px; cursor:pointer;">Beli Neon Discord</button>
-        <button onclick="buyDecoration('gold')" style="background:#FFD700; color:black; border:none; padding:10px; border-radius:5px; cursor:pointer;">Beli Gold VIP</button>
-    </div>
-</div>
-
-            <div style="text-align: center; padding: 0 30px 40px; margin-top: 50px;">
-                <h2 id="display-name" style="font-size: 2rem; margin-bottom: 5px;">Loading...</h2>
-                <div id="role-badge-container">
-                    <span class="role-badge" id="display-role">MEMBER</span>
+        <div id="profile-card-container" class="glass card" style="padding: 0; overflow: hidden; margin-bottom: 30px;">
+            <div id="display-banner" style="height:180px; background-color: #333; background-position: center; background-size: cover;"></div>
+            
+            <div style="padding: 0 20px 30px; text-align: center; position: relative;">
+                <div id="avatar-frame" style="display: inline-block; margin-top: -60px; border-radius: 50%; padding: 5px;">
+                    <img id="display-avatar" src="https://ui-avatars.com/api/?name=User" 
+                         style="width: 110px; height: 110px; border-radius: 50%; border: 4px solid var(--glass-bg); object-fit: cover; background: #222;">
                 </div>
                 
-                <p id="display-bio" style="margin: 20px auto; color: var(--text-secondary); max-width: 600px; font-style: italic;">
-                    "Bio belum diisi."
-                </p>
-
-                <div id="display-skills" class="skills-wrapper"></div>
+                <h2 id="display-name" style="margin-top: 15px; font-size: 1.8rem;">Loading...</h2>
+                <div style="margin: 10px 0;">
+                    <span id="user-role-badge" class="badge">MEMBER</span>
+                    <span id="user-credits" style="color: #10b981; font-weight: bold; margin-left: 10px;">$0</span>
+                </div>
+                
+                <p id="display-bio" style="color: #ccc; font-style: italic; margin-bottom: 15px;">"Bio belum diisi."</p>
+                
+                <div id="display-skills" style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;"></div>
             </div>
         </div>
 
         <div class="glass card">
-            <h3 style="border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; margin-bottom: 20px;">
-                <i class="fas fa-sliders-h"></i> Edit Identity
+            <h3 style="margin-bottom: 20px; color: var(--accent);">
+                <i class="fas fa-user-edit"></i> Edit Identity
             </h3>
             
             <form id="profileForm">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div>
                         <label>Nama Tampilan</label>
-                        <input type="text" id="edit-name" placeholder="Nama Anda">
+                        <input type="text" id="edit-name" placeholder="Nama Anda" required>
                     </div>
                     <div>
                         <label>Nomor HP</label>
@@ -92,29 +58,55 @@
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
                     <div>
-                        <label>Link Foto Profil (URL)</label>
+                        <label>Foto Profil (URL/Link)</label>
                         <input type="url" id="edit-avatar-url" placeholder="https://...">
                     </div>
                     <div>
-                        <label>Link Banner (URL)</label>
+                        <label>Banner Profil / GIF (URL)</label>
                         <input type="url" id="edit-banner-url" placeholder="https://...">
                     </div>
                 </div>
 
-                <label>Bio / Motto</label>
-                <textarea id="edit-bio" rows="3" placeholder="Tentang diri anda..."></textarea>
+                <div style="margin-top: 15px;">
+                    <label>Link Portofolio (Pamerkan karya Anda)</label>
+                    <input type="url" id="edit-portfolio" placeholder="https://github.com/username">
+                </div>
 
-                <label>Keahlian / Skills (Pisahkan dengan koma)</label>
-                <input type="text" id="edit-skills" placeholder="Contoh: Coding, Design, Gaming">
+                <div style="margin-top: 15px;">
+                    <label>Bio / Motto</label>
+                    <textarea id="edit-bio" rows="2" placeholder="Tentang diri anda..."></textarea>
+                </div>
 
-                <button type="submit" class="btn btn-primary" style="margin-top: 10px; width: 100%;">Simpan Perubahan</button>
+                <div style="margin-top: 15px;">
+                    <label>Keahlian (Pisahkan dengan koma)</label>
+                    <input type="text" id="edit-skills" placeholder="Contoh: HTML, CSS, JavaScript">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top: 20px; width: 100%; padding: 12px;">
+                    <i class="fas fa-save"></i> Simpan Perubahan
+                </button>
             </form>
+        </div>
+
+        <div class="glass card" style="margin-top: 30px; border: 1px solid #ffd70033;">
+            <h3 style="color: #ffd700; margin-bottom: 10px;">
+                <i class="fas fa-gem"></i> Premium Decoration
+            </h3>
+            <p style="font-size: 0.85rem; color: #aaa; margin-bottom: 20px;">
+                Tingkatkan tampilan profilmu. Harga: <b>$100 Kredit</b> per item.
+            </p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;">
+                <button onclick="buyDecoration('neon')" class="btn-shop deco-neon-preview">Neon Discord</button>
+                <button onclick="buyDecoration('gold')" class="btn-shop deco-gold-preview">Gold VIP</button>
+                <button onclick="buyDecoration('galaxy')" class="btn-shop deco-galaxy-preview">Galaxy Animated</button>
+                <button onclick="buyDecoration('emerald')" class="btn-shop deco-emerald-preview">Emerald Knight</button>
+            </div>
         </div>
     </div>
 
-    <script src="main.js"></script>
     <script type="module" src="App.js"></script>
 </body>
 </html>
