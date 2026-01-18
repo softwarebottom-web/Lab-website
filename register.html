@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Join the Lab</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="glass auth-box">
+            <h2 style="text-align: center; margin-bottom: 10px;">New Member Registration</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 20px;">Dapatkan akses ke arsip & komunitas.</p>
+            
+            <form id="registerForm">
+                <label>Nama Lengkap</label>
+                <input type="text" id="reg-name" placeholder="Nama Keren Kamu" required>
+
+                <label>Nomor HP (WhatsApp)</label>
+                <input type="tel" id="reg-phone" placeholder="0812..." required>
+
+                <label>Email</label>
+                <input type="email" id="reg-email" placeholder="email@gmail.com" required>
+                
+                <label>Password</label>
+                <input type="password" id="reg-password" placeholder="Buat password kuat" required>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Daftar Sekarang</button>
+            </form>
+            
+            <div style="margin-top: 20px; text-align: center; font-size: 0.9rem;">
+                <p>Sudah punya akun? <a href="login.html" style="color: var(--accent);">Login disini</a></p>
+            </div>
+            <p id="reg-error" style="color: #ef4444; margin-top: 10px; text-align: center;"></p>
+        </div>
+    </div>
+    <script type="module" src="App.js"></script>
+     <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,341 @@
+/* style.css - FINAL VERSION */
+:root {
+    --bg-color: #0f172a;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --accent: #38bdf8;         /* Cyan Blue */
+    --accent-glow: rgba(56, 189, 248, 0.4);
+    --glass-bg: rgba(30, 41, 59, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --card-hover: rgba(56, 189, 248, 0.08);
+    --success: #10b981;
+    --error: #ef4444;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+body {
+    background-color: var(--bg-color);
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 20%);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+/* --- UTILITIES & GLASSMORPHISM --- */
+.glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.btn {
+    padding: 10px 24px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.95rem;
+}
+
+.btn-primary { 
+    background: var(--accent); 
+    color: #0f172a; 
+}
+
+.btn-primary:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 0 20px var(--accent-glow); 
+}
+
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* --- NAVIGATION --- */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 5%;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    color: var(--text-primary);
+}
+
+nav ul { list-style: none; display: flex; gap: 25px; align-items: center; }
+nav a { color: var(--text-secondary); text-decoration: none; transition: 0.3s; font-size: 0.95rem; }
+nav a:hover, nav a.active { color: var(--accent); }
+
+/* --- LAYOUT CONTENT --- */
+.container { 
+    padding: 120px 5% 50px; 
+    flex: 1; 
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Hero Section */
+.hero { text-align: center; margin-top: 60px; }
+.hero h1 { 
+    font-size: 4rem; 
+    margin-bottom: 20px; 
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1px;
+}
+
+/* --- CARDS & GRID --- */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+}
+
+/* Custom Grid untuk Dashboard (2:1 Ratio) */
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 25px;
+}
+
+.card { 
+    padding: 25px; 
+    transition: all 0.3s ease; 
+    position: relative;
+    overflow: hidden;
+}
+
+.card:hover { 
+    border-color: rgba(56, 189, 248, 0.3); 
+    background: var(--card-hover); 
+    transform: translateY(-5px);
+}
+
+.card h3 { color: var(--text-primary); margin-bottom: 10px; font-weight: 600; }
+
+/* Font coding untuk judul project */
+#project-list h3 { font-family: 'Courier New', Courier, monospace; letter-spacing: -0.5px; }
+
+/* --- FORMS (INPUT & TEXTAREA) --- */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+.auth-box { width: 100%; max-width: 400px; padding: 40px; }
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Style Input & Textarea sama */
+input, textarea, select {
+    width: 100%; 
+    padding: 12px 15px; 
+    margin-bottom: 20px;
+    background: rgba(15, 23, 42, 0.6); 
+    border: 1px solid var(--glass-border);
+    color: white; 
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: 0.3s;
+    resize: vertical; /* Untuk textarea */
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+}
+
+::placeholder { color: rgba(148, 163, 184, 0.5); }
+
+/* --- PROFILE PAGE SPECIAL STYLES (INI YANG BARU) --- */
+.profile-header {
+    position: relative;
+    margin-bottom: 80px; /* Memberi ruang untuk foto profil yang menonjol keluar */
+}
+
+.profile-banner {
+    width: 100%;
+    height: 250px;
+    background-color: #1e293b;
+    background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop'); /* Default Banner */
+    background-size: cover;
+    background-position: center;
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    position: relative;
+}
+
+.profile-picture-container {
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 5px solid var(--bg-color); /* Memberi border warna background agar terlihat terpisah */
+    overflow: hidden;
+    background: #000;
+}
+
+.profile-picture-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.role-badge {
+    background: rgba(56, 189, 248, 0.1); 
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: var(--accent);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+/* Style untuk Tag Keahlian (Skills) */
+.skills-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.skill-tag {
+    background: rgba(56, 189, 248, 0.15);
+    color: var(--accent);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+/* --- FOOTER --- */
+footer {
+    border-top: 1px solid var(--glass-border);
+    margin-top: auto;
+    padding: 30px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+/* --- RESPONSIVE MOBILE --- */
+@media (max-width: 768px) {
+    .hero h1 { font-size: 2.5rem; }
+    
+    .dashboard-layout {
+        grid-template-columns: 1fr; /* Stack ke bawah di HP */
+    }
+
+    nav { padding: 15px 20px; }
+    
+    nav ul { 
+        gap: 10px; 
+    }
+    
+    nav a.btn-primary {
+        padding: 8px 15px;
+        font-size: 0.8rem;
+    }
+    
+    .container { padding-top: 100px; }
+    
+    /* Sembunyikan text menu di layar sangat kecil jika perlu */
+    nav a { font-size: 0.85rem; }
+    
+    .profile-banner { height: 180px; }
+    .profile-picture-container { width: 100px; height: 100px; bottom: -50px; }
+}
+
+/* --- NEW FEATURES UPDATE --- */
+
+/* Label Berita */
+.news-badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-right: 10px;
+}
+.badge-important { background: #ef4444; color: white; cursor: pointer; }
+.badge-general { background: #64748b; color: white; }
+
+/* Item Berita Penting (Bisa diklik) */
+.news-item-important {
+    cursor: pointer;
+    border-left: 4px solid #ef4444 !important;
+    transition: transform 0.2s;
+}
+.news-item-important:hover { transform: translateX(5px); }
+
+/* Modal Popup (Untuk Detail Berita) */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: none; justify-content: center; align-items: center;
+    z-index: 2000;
+}
+.modal-box {
+    width: 90%; max-width: 500px; padding: 30px;
+    position: relative;
+}
+.close-modal {
+    position: absolute; top: 15px; right: 20px;
+    font-size: 1.5rem; color: #ef4444; cursor: pointer;
+}
+
+/* Delete Button (Khusus Owner) */
+.btn-delete {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid #ef4444;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+.btn-delete:hover { background: #ef4444; color: white; }
+
+/* Kredit Member */
+.credit-display {
+    font-size: 1.5rem; color: #10b981; font-weight: bold; margin: 10px 0;
+}

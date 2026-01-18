@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Repository - Archive Lab</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="glass">
+        <div class="logo">ARCHIVE LAB.</div>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="project.html" class="active">Repository</a></li>
+            <li><a href="media.html">News</a></li>
+            <li><a href="profile.html"><i class="fas fa-user-circle"></i> Profile</a></li>
+            <li><a href="#" id="btnLogout">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div style="text-align: center; margin-bottom: 50px;">
+            <h1 style="font-size: 3rem; margin-bottom: 10px;">Project Repository</h1>
+            <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto;">
+                Koleksi eksperimen digital, source code, dan tools. <br>
+                Member dapat mengakses aset yang berstatus <span style="color: #10b981;">Unlocked</span>.
+            </p>
+        </div>
+
+        <div class="glass" style="padding: 15px; display: flex; align-items: center; max-width: 600px; margin: 0 auto 40px; border-radius: 50px;">
+            <i class="fas fa-search" style="color: var(--text-secondary); margin-left: 15px;"></i>
+            <input type="text" placeholder="Cari project..." style="border: none; background: transparent; margin: 0; padding: 0 15px; height: auto; box-shadow: none;">
+        </div>
+
+        <div id="project-list" class="grid-container">
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--accent);"></i>
+                <p style="margin-top: 15px; color: var(--text-secondary);">Mengambil data dari server...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+    <script type="module" src="App.js"></script>
+</body>
+</html>

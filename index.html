@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Lab Archive</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="glass">
+        <div class="logo" style="font-weight: bold; letter-spacing: 2px;">
+            <i class="fas fa-flask" style="color: var(--accent);"></i> MY LAB.
+        </div>
+        <ul>
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="register.html" class="btn btn-primary" style="padding: 8px 20px;">Join Member</a></li>
+        </ul>
+    </nav>
+
+    <div class="container hero" style="display: flex; flex-direction: column; justify-content: center; min-height: 80vh;">
+        <span style="color: var(--accent); font-weight: bold; letter-spacing: 1px; margin-bottom: 10px;">PORTFOLIO & ARCHIVE</span>
+        <h1 style="font-size: 4rem; line-height: 1.1; margin-bottom: 20px;">
+            Eksplorasi <span style="background: linear-gradient(to right, var(--accent), #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Ide Digital</span><br>
+            Tanpa Batas.
+        </h1>
+        <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto 40px; font-size: 1.1rem;">
+            Selamat datang di Laboratorium Pribadi saya. Tempat di mana seluruh proyek, eksperimen koding, dan inovasi diarsipkan secara terstruktur.
+        </p>
+        
+        <div style="display: flex; gap: 20px; justify-content: center;">
+            <a href="register.html" class="btn btn-primary"><i class="fas fa-user-plus"></i> Daftar Sekarang</a>
+            <a href="login.html" class="btn" style="border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05);">Masuk Sistem</a>
+        </div>
+    </div>
+
+    <div class="container" style="padding-top: 0;">
+        <div class="grid-container">
+            <div class="glass card" style="text-align: left;">
+                <i class="fas fa-code-branch" style="font-size: 2rem; color: var(--accent); margin-bottom: 20px;"></i>
+                <h3>Project Repository</h3>
+                <p style="color: var(--text-secondary); margin-top: 10px;">
+                    Akses eksklusif ke berbagai source code dan dokumentasi proyek yang pernah saya kerjakan.
+                </p>
+            </div>
+
+            <div class="glass card" style="text-align: left;">
+                <i class="fas fa-newspaper" style="font-size: 2rem; color: var(--accent); margin-bottom: 20px;"></i>
+                <h3>Live Updates</h3>
+                <p style="color: var(--text-secondary); margin-top: 10px;">
+                    Dapatkan informasi terbaru mengenai riset dan pengembangan teknologi terkini langsung dari dashboard.
+                </p>
+            </div>
+
+            <div class="glass card" style="text-align: left;">
+                <i class="fas fa-id-card" style="font-size: 2rem; color: var(--accent); margin-bottom: 20px;"></i>
+                <h3>Member Profile</h3>
+                <p style="color: var(--text-secondary); margin-top: 10px;">
+                    Buat identitas unik Anda sendiri sebagai bagian dari komunitas laboratorium digital ini.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 40px; color: var(--text-secondary); font-size: 0.8rem; border-top: 1px solid var(--glass-border); margin-top: 50px;">
+        <p>&copy; 2024 My Digital Laboratory. All rights reserved.</p>
+    </footer>
+    
+     <script src="main.js"></script>
+
+    <script type="module" src="App.js"></script>
+</body>
+</html>

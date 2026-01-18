@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Media & Broadcast</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="glass">
+        <div class="logo">BROADCAST</div>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="project.html">Repository</a></li>
+            <li><a href="media.html" class="active">News</a></li>
+            <li><a href="profile.html"><i class="fas fa-user-circle"></i> Profile</a></li>
+            <li><a href="#" id="btnLogout">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="container" style="max-width: 800px;">
+        <h2 style="margin-bottom: 30px; border-bottom: 2px solid var(--accent); padding-bottom: 10px;">
+            <i class="fas fa-satellite-dish"></i> Live Broadcast News
+        </h2>
+        
+        <div id="media-news-list">
+            <p style="text-align: center; color: #aaa;">Menunggu transmisi data...</p>
+        </div>
+    </div>
+
+    <script type="module" src="App.js"></script>
+</body>
+</html>

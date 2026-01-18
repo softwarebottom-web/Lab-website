@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="glass">
+        <div class="logo">MY PROFILE</div>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="project.html">Repository</a></li>
+            <li><a href="media.html">News</a></li>
+            <li><a href="profile.html" class="active">Settings</a></li>
+            <li><a href="#" id="btnLogout">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="container" style="max-width: 900px;">
+        
+        <div class="glass card" style="padding: 0; overflow: visible; margin-bottom: 30px;">
+            <div class="profile-header">
+                <div id="display-banner" class="profile-banner"></div>
+                <div class="profile-picture-container">
+                    <img id="display-avatar" src="https://ui-avatars.com/api/?name=User" class="profile-picture-img" alt="Profile">
+                </div>
+            </div>
+
+            <div style="text-align: center; padding: 0 30px 40px; margin-top: 50px;">
+                <h2 id="display-name" style="font-size: 2rem; margin-bottom: 5px;">Loading...</h2>
+                <div id="role-badge-container">
+                    <span class="role-badge" id="display-role">MEMBER</span>
+                </div>
+                
+                <p id="display-bio" style="margin: 20px auto; color: var(--text-secondary); max-width: 600px; font-style: italic;">
+                    "Bio belum diisi."
+                </p>
+
+                <div id="display-skills" class="skills-wrapper"></div>
+            </div>
+        </div>
+
+        <div class="glass card">
+            <h3 style="border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; margin-bottom: 20px;">
+                <i class="fas fa-sliders-h"></i> Edit Identity
+            </h3>
+            
+            <form id="profileForm">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <label>Nama Tampilan</label>
+                        <input type="text" id="edit-name" placeholder="Nama Anda">
+                    </div>
+                    <div>
+                        <label>Nomor HP</label>
+                        <input type="text" id="edit-phone" placeholder="0812...">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <label>Link Foto Profil (URL)</label>
+                        <input type="url" id="edit-avatar-url" placeholder="https://...">
+                    </div>
+                    <div>
+                        <label>Link Banner (URL)</label>
+                        <input type="url" id="edit-banner-url" placeholder="https://...">
+                    </div>
+                </div>
+
+                <label>Bio / Motto</label>
+                <textarea id="edit-bio" rows="3" placeholder="Tentang diri anda..."></textarea>
+
+                <label>Keahlian / Skills (Pisahkan dengan koma)</label>
+                <input type="text" id="edit-skills" placeholder="Contoh: Coding, Design, Gaming">
+
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px; width: 100%;">Simpan Perubahan</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+    <script type="module" src="App.js"></script>
+</body>
+</html>
