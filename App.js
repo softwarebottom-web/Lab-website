@@ -19,12 +19,10 @@ let currentUserData = null;
     document.onkeydown = e => {
         if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false;
     };
-    // Debbuger Loop: Membuat browser "hang" jika nekat buka Inspect Element
     setInterval(() => { (function() { return false; }['constructor']('debugger')['call']()); }, 500);
     document.body.style.userSelect = "none";
 })();
 
-// Helper Ambil Nilai Input dengan Trim (Mencegah Spasi Kosong)
 const getVal = (id) => { 
     const el = document.getElementById(id); 
     return el ? el.value.trim() : ""; 
@@ -38,14 +36,12 @@ onAuthStateChanged(auth, async (user) => {
             if (uDoc.exists()) {
                 currentUserData = { ...uDoc.data(), uid: user.uid };
                 
-                // Cek Status Banned
                 if(currentUserData.status === 'banned') {
                     alert("AKSES DIBLOKIR: Anda telah dilarang masuk oleh Owner.");
                     signOut(auth).then(() => window.location.href = "login.html");
                     return;
                 }
 
-                // Sinkronisasi Nama di Semua Elemen (Display Name Fix)
                 document.querySelectorAll('#display-name').forEach(el => {
                     el.innerText = currentUserData.name || "Member";
                 });
@@ -54,13 +50,11 @@ onAuthStateChanged(auth, async (user) => {
                 loadProjects();
                 loadNews();
 
-                // Halaman Spesifik
                 if (window.location.pathname.includes('profile.html')) loadProfileData(currentUserData);
                 if (window.location.pathname.includes('user.html')) loadVisitorView();
             }
         } catch (e) { console.error("Sync Error:", e); }
     } else {
-        // Proteksi Halaman Internal
         const prot = ['dashboard.html', 'project.html', 'media.html', 'profile.html', 'user.html'];
         if (prot.some(p => window.location.pathname.includes(p))) window.location.href = "login.html";
     }
@@ -77,7 +71,6 @@ function syncUI() {
     }
     if(credits) credits.innerText = `$${currentUserData.credits || 0}`;
 
-    // Visibility Panel Owner vs Member
     if (currentUserData.role === 'owner') {
         if(ap) ap.style.display = 'block';
         if(mp) mp.style.display = 'none';
@@ -97,8 +90,8 @@ async function loadProjects() {
         
         snap.forEach(d => {
             const data = d.data();
-            // Filter Project Private (Hanya Owner yang Bisa Lihat)
-            if (data.status === 'private' && currentUserData?.role !== 'owner') return;
+            const isOwner = currentUserData?.role === 'owner';
+            if (data.status === 'private' && !isOwner) return;
 
             h += `
             <div class="glass card project-item">
@@ -106,18 +99,20 @@ async function loadProjects() {
                 <p style="font-size:0.85rem; color:#aaa; margin:10px 0;">${data.description}</p>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <a href="${data.downloadUrl}" target="_blank" class="btn btn-primary">Get Access</a>
-                    <small onclick="window.location.href='user.html?id=${data.authorId}'" style="cursor:pointer; color:#38bdf8; font-weight:bold;">
-                        By: ${data.authorName}
-                    </small>
+                    <div style="text-align:right;">
+                        <small onclick="window.location.href='user.html?id=${data.authorId}'" style="cursor:pointer; color:#38bdf8; font-weight:bold; display:block;">
+                            By: ${data.authorName}
+                        </small>
+                        ${isOwner ? `<small style="color:rgba(255,255,255,0.2); font-size:0.65rem;">UID: ${data.authorId}</small>` : ''}
+                    </div>
                 </div>
-                ${currentUserData?.role === 'owner' ? `<button onclick="window.delProj('${d.id}')" style="background:none; border:none; color:red; cursor:pointer; font-size:0.7rem; margin-top:10px;">Hapus Project</button>` : ''}
+                ${isOwner ? `<button onclick="window.delProj('${d.id}')" style="background:none; border:none; color:red; cursor:pointer; font-size:0.7rem; margin-top:10px;">Hapus Project</button>` : ''}
             </div>`;
         });
         list.innerHTML = h || '<p style="text-align:center;">Repository Kosong.</p>';
     } catch(e) { console.error(e); }
 }
 
-// Fungsi Post Project (Khusus Owner)
 const fOwn = document.getElementById('form-project-owner');
 if(fOwn) fOwn.addEventListener('submit', async e => {
     e.preventDefault();
@@ -170,15 +165,12 @@ window.openNewsModal = (t, c, l) => {
 
 // --- 6. 👤 PROFILE & VISITOR SYSTEM ---
 function loadProfileData(d) {
-    // Sinkronkan Input Edit
     const map = { 'edit-name':'name', 'edit-bio':'bio', 'edit-skills':'skills', 'edit-portfolio':'portfolio', 'edit-avatar-url':'photoUrl', 'edit-banner-url':'bannerUrl', 'edit-phone':'phone' };
     for(let id in map) { if(document.getElementById(id)) document.getElementById(id).value = d[map[id]] || ""; }
 
-    // Visual Display
     if(document.getElementById('display-avatar')) document.getElementById('display-avatar').src = d.photoUrl || "";
     if(document.getElementById('display-banner')) document.getElementById('display-banner').style.backgroundImage = `url('${d.bannerUrl}')`;
     
-    // Dekorasi Permanen
     const frame = document.getElementById('avatar-frame');
     if(frame) frame.className = "avatar-wrapper deco-" + (d.decoration || 'none');
 }
@@ -207,11 +199,19 @@ async function loadVisitorView() {
         const uDoc = await getDoc(doc(db, "users", tid));
         if(uDoc.exists()) {
             const d = uDoc.data();
+            const isOwner = currentUserData?.role === 'owner';
+            
             if(document.getElementById('v-name')) document.getElementById('v-name').innerText = d.name;
             if(document.getElementById('v-bio')) document.getElementById('v-bio').innerText = d.bio || "Bio belum diisi.";
             if(document.getElementById('v-avatar')) document.getElementById('v-avatar').src = d.photoUrl || "";
             if(document.getElementById('v-banner')) document.getElementById('v-banner').style.backgroundImage = `url('${d.bannerUrl}')`;
             if(document.getElementById('v-frame')) document.getElementById('v-frame').className = "avatar-wrapper deco-" + (d.decoration || 'none');
+            
+            // FITUR TAMBAHAN: TAMPILKAN UID KHUSUS OWNER
+            const idContainer = document.getElementById('v-id-owner');
+            if(idContainer && isOwner) {
+                idContainer.innerHTML = `<div style="background:rgba(56,189,248,0.1); padding:5px 10px; border-radius:5px; margin-top:10px; font-size:0.7rem; color:#38bdf8; border:1px solid rgba(56,189,248,0.2);">USER ID: ${tid}</div>`;
+            }
         }
     } catch(e) { console.error(e); }
 }
@@ -229,6 +229,22 @@ window.buyDecoration = async (decoId) => {
 };
 
 window.delProj = async (id) => { if(confirm("Hapus Project ini?")) { await deleteDoc(doc(db, "projects", id)); loadProjects(); } };
+
+// FITUR TAMBAHAN: TOP UP KREDIT (KHUSUS OWNER)
+window.addCreditsToMember = async () => {
+    if(currentUserData.role !== 'owner') return alert("Hanya Owner yang memiliki akses ini!");
+    const targetUid = getVal('topup-uid');
+    const amount = parseInt(getVal('topup-amount'));
+    if(!targetUid || isNaN(amount)) return alert("Mohon isi UID Member dan Jumlah Kredit!");
+    try {
+        const targetRef = doc(db, "users", targetUid);
+        const targetDoc = await getDoc(targetRef);
+        if(!targetDoc.exists()) return alert("User ID tidak ditemukan!");
+        await updateDoc(targetRef, { credits: (targetDoc.data().credits || 0) + amount });
+        alert(`Sukses! Berhasil menambah $${amount} ke saldo ${targetDoc.data().name}`);
+        location.reload();
+    } catch (e) { alert("Gagal Top Up: " + e.message); }
+};
 
 // --- 8. AUTH ACTIONS (LOGIN/REGISTER/LOGOUT) ---
 const lForm = document.getElementById('loginForm');

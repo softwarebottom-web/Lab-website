@@ -59,8 +59,18 @@
             </form>
         </div>
 
+        <div id="admin-panel" class="glass card" style="display: none; margin-top: 30px; border: 1px solid #10b981;">
+            <h3 style="color: #10b981;"><i class="fas fa-money-bill-wave"></i> Owner: Top Up Credits</h3>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <input type="text" id="topup-uid" placeholder="User ID (UID) Member" style="flex: 2; margin-bottom: 0;">
+                <input type="number" id="topup-amount" placeholder="Jumlah ($)" style="flex: 1; margin-bottom: 0;">
+            </div>
+            <button onclick="window.addCreditsToMember()" class="btn btn-primary" style="margin-top: 15px; width: 100%; background: #10b981;">Kirim Kredit</button>
+        </div>
+
         <div class="glass card" style="margin-top: 30px;">
             <h3 style="color: #ffd700;"><i class="fas fa-gem"></i> Premium Decoration</h3>
+            <p style="font-size: 0.8rem; color: #aaa;">Beli dekorasi permanen seharga $100.</p>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 15px;">
                 <button onclick="buyDecoration('neon')" class="btn-shop">Neon Blue</button>
                 <button onclick="buyDecoration('gold')" class="btn-shop">Gold VIP</button>
