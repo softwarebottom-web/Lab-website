@@ -168,6 +168,14 @@ function loadProfileData(d) {
     const map = { 'edit-name':'name', 'edit-bio':'bio', 'edit-skills':'skills', 'edit-portfolio':'portfolio', 'edit-avatar-url':'photoUrl', 'edit-banner-url':'bannerUrl', 'edit-phone':'phone' };
     for(let id in map) { if(document.getElementById(id)) document.getElementById(id).value = d[map[id]] || ""; }
 
+    // Visual Display Bio & Profesi
+    if(document.getElementById('display-bio')) document.getElementById('display-bio').innerText = d.bio || "Bio belum diisi.";
+    if(document.getElementById('display-skills')) {
+        const skillContainer = document.getElementById('display-skills');
+        skillContainer.innerHTML = d.skills ? d.skills.split(',').map(s => `<span class="skill-tag">${s.trim()}</span>`).join('') : "";
+    }
+    if(document.getElementById('display-uid')) document.getElementById('display-uid').innerText = "UID: " + d.uid;
+
     if(document.getElementById('display-avatar')) document.getElementById('display-avatar').src = d.photoUrl || "";
     if(document.getElementById('display-banner')) document.getElementById('display-banner').style.backgroundImage = `url('${d.bannerUrl}')`;
     
@@ -203,11 +211,14 @@ async function loadVisitorView() {
             
             if(document.getElementById('v-name')) document.getElementById('v-name').innerText = d.name;
             if(document.getElementById('v-bio')) document.getElementById('v-bio').innerText = d.bio || "Bio belum diisi.";
+            if(document.getElementById('v-skills')) {
+                const sContainer = document.getElementById('v-skills');
+                sContainer.innerHTML = d.skills ? d.skills.split(',').map(s => `<span class="skill-tag">${s.trim()}</span>`).join('') : "-";
+            }
             if(document.getElementById('v-avatar')) document.getElementById('v-avatar').src = d.photoUrl || "";
             if(document.getElementById('v-banner')) document.getElementById('v-banner').style.backgroundImage = `url('${d.bannerUrl}')`;
             if(document.getElementById('v-frame')) document.getElementById('v-frame').className = "avatar-wrapper deco-" + (d.decoration || 'none');
             
-            // FITUR TAMBAHAN: TAMPILKAN UID KHUSUS OWNER
             const idContainer = document.getElementById('v-id-owner');
             if(idContainer && isOwner) {
                 idContainer.innerHTML = `<div style="background:rgba(56,189,248,0.1); padding:5px 10px; border-radius:5px; margin-top:10px; font-size:0.7rem; color:#38bdf8; border:1px solid rgba(56,189,248,0.2);">USER ID: ${tid}</div>`;
