@@ -74,6 +74,11 @@ function syncUI() {
     if (currentUserData.role === 'owner') {
         if(ap) ap.style.display = 'block';
         if(mp) mp.style.display = 'none';
+        
+        // MENAMPILKAN TOMBOL DEKORASI KHUSUS OWNER
+        if(document.getElementById('btn-deco-rgb')) document.getElementById('btn-deco-rgb').style.display = 'block';
+        if(document.getElementById('btn-deco-cyber')) document.getElementById('btn-deco-cyber').style.display = 'block';
+        if(document.getElementById('btn-deco-void')) document.getElementById('btn-deco-void').style.display = 'block';
     } else {
         if(ap) ap.style.display = 'none';
         if(mp) mp.style.display = 'block';

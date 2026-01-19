@@ -533,3 +533,48 @@ body {
     border-color: var(--accent);
     transform: translateY(-3px);
 }
+
+/* --- DEKORASI KHUSUS OWNER (ULTRA RARE) --- */
+
+/* 1. RGB GOD MODE (Owner Only) */
+.deco-owner-rgb {
+    border: 4px solid #fff;
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    background-size: 400%;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+    animation: rgb-rotate 10s linear infinite;
+}
+
+/* 2. CYBERPUNK GLITCH (Owner Only) */
+.deco-owner-cyber {
+    border: 3px solid #00ff00;
+    box-shadow: 0 0 20px #00ff00, inset 0 0 10px #00ff00;
+    filter: drop-shadow(0 0 5px #0ff);
+    animation: glitch-border 2s steps(2) infinite;
+}
+
+/* 3. DARK VOID ENERGY (Owner Only) */
+.deco-owner-void {
+    border: 3px dashed #7a00ff;
+    background: radial-gradient(circle, #000, #1a0033);
+    box-shadow: 0 0 30px #7a00ff, 0 0 10px #fff;
+    animation: void-spin 5s linear infinite;
+}
+
+/* --- ANIMATIONS --- */
+@keyframes rgb-rotate {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes glitch-border {
+    0% { border-color: #00ff00; box-shadow: 0 0 20px #00ff00; }
+    50% { border-color: #ff00ff; box-shadow: 0 0 20px #ff00ff; }
+    100% { border-color: #00ffff; box-shadow: 0 0 20px #00ffff; }
+}
+
+@keyframes void-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
