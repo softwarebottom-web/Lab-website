@@ -2,12 +2,14 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Me</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <nav class="glass">
         <div class="logo">MY LAB.</div>
+        <div class="nav-toggle"><i class="fas fa-bars"></i></div>
         <ul>
             <li><a href="index.html">Home</a></li>
             <li><a href="about.html" class="active">About</a></li>
@@ -32,5 +34,12 @@
      <script src="main.js"></script>
 
     <script type="module" src="App.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const nav = document.querySelector('nav');
+        const toggle = document.querySelector('.nav-toggle');
+        if (toggle) toggle.addEventListener('click', () => nav.classList.toggle('nav-open'));
+    });
+    </script>
 </body>
 </html>

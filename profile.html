@@ -2,6 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings - Archive Lab</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -9,6 +10,7 @@
 <body>
     <nav class="glass">
         <div class="logo">MY PROFILE</div>
+        <div class="nav-toggle"><i class="fas fa-bars"></i></div>
         <ul>
             <li><a href="dashboard.html">Dashboard</a></li>
             <li><a href="project.html">Repository</a></li>
@@ -18,7 +20,7 @@
         </ul>
     </nav>
 
-    <div class="container" style="max-width: 800px;">
+    <div class="container">
         
         <div id="profile-card-container" class="glass card" style="padding: 0; overflow: hidden; margin-bottom: 30px;">
             <div id="display-banner" style="height:180px; background-color: #333; background-position: center; background-size: cover;"></div>
@@ -86,5 +88,12 @@
         </div>
     </div>
     <script type="module" src="App.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const nav = document.querySelector('nav');
+        const toggle = document.querySelector('.nav-toggle');
+        if (toggle) toggle.addEventListener('click', () => nav.classList.toggle('nav-open'));
+    });
+    </script>
 </body>
 </html>

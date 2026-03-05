@@ -9,29 +9,29 @@
 </head>
 <body>
     <nav class="glass">
-        <div class="logo" style="font-weight: bold; letter-spacing: 2px;">
+        <div class="logo">
             <i class="fas fa-flask" style="color: var(--accent);"></i> MY LAB.
         </div>
+        <div class="nav-toggle"><i class="fas fa-bars"></i></div>
         <ul>
             <li><a href="index.html" class="active">Home</a></li>
             <li><a href="login.html">Login</a></li>
-            <li><a href="register.html" class="btn btn-primary" style="padding: 8px 20px;">Join Member</a></li>
+            <li><a href="register.html" class="btn btn-primary">Join Member</a></li>
         </ul>
     </nav>
 
-    <div class="container hero" style="display: flex; flex-direction: column; justify-content: center; min-height: 80vh;">
+    <div class="container hero">
         <span style="color: var(--accent); font-weight: bold; letter-spacing: 1px; margin-bottom: 10px;">PORTFOLIO & ARCHIVE</span>
-        <h1 style="font-size: 4rem; line-height: 1.1; margin-bottom: 20px;">
-            Eksplorasi <span style="background: linear-gradient(to right, var(--accent), #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Ide Digital</span><br>
+        <h1>
+            Eksplorasi <span class="gradient-text">Ide Digital</span><br>
             Tanpa Batas.
         </h1>
-        <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto 40px; font-size: 1.1rem;">
+        <p class="hero-content">
             Selamat datang di Laboratorium Pribadi saya. Tempat di mana seluruh proyek, eksperimen koding, dan inovasi diarsipkan secara terstruktur.
         </p>
-        
-        <div style="display: flex; gap: 20px; justify-content: center;">
+        <div class="hero-buttons">
             <a href="register.html" class="btn btn-primary"><i class="fas fa-user-plus"></i> Daftar Sekarang</a>
-            <a href="login.html" class="btn" style="border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05);">Masuk Sistem</a>
+            <a href="login.html" class="btn btn-secondary">Masuk Sistem</a>
         </div>
     </div>
 
@@ -70,5 +70,12 @@
      <script src="main.js"></script>
 
     <script type="module" src="App.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const nav = document.querySelector('nav');
+        const toggle = document.querySelector('.nav-toggle');
+        if(toggle) toggle.addEventListener('click', () => nav.classList.toggle('nav-open'));
+    });
+    </script>
 </body>
 </html>

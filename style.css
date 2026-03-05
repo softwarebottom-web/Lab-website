@@ -87,6 +87,38 @@ nav ul { list-style: none; display: flex; gap: 25px; align-items: center; }
 nav a { color: var(--text-secondary); text-decoration: none; transition: 0.3s; font-size: 0.95rem; }
 nav a:hover, nav a.active { color: var(--accent); }
 
+/* hamburger toggle for mobile nav */
+.nav-toggle {
+    display: none;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    user-select: none;
+}
+
+@media (max-width: 768px) {
+    .nav-toggle {
+        display: block;
+    }
+    nav ul {
+        position: absolute;
+        top: 60px;
+        right: 5%;
+        background: var(--glass-bg);
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+        gap: 15px;
+        border-radius: 8px;
+        display: none;
+        width: 200px;
+    }
+    nav.nav-open ul {
+        display: flex;
+    }
+}
+
+
 /* --- LAYOUT CONTENT --- */
 .container { 
     padding: 120px 5% 50px; 
@@ -96,15 +128,50 @@ nav a:hover, nav a.active { color: var(--accent); }
     margin: 0 auto;
 }
 
+/* utility helpers */
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.badge.success { color: var(--success); font-weight: bold; font-size: 1.2rem; }
+
+
 /* Hero Section */
-.hero { text-align: center; margin-top: 60px; }
-.hero h1 { 
-    font-size: 4rem; 
-    margin-bottom: 20px; 
+.hero {
+    text-align: center;
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 80vh;
+}
+
+/* utility for gradient text */
+.gradient-text {
+    background: linear-gradient(to right, var(--accent), #fff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.hero h1 {
+    font-size: 4rem;
+    margin-bottom: 20px;
     font-weight: 800;
     line-height: 1.1;
     letter-spacing: -1px;
 }
+.hero-content {
+    max-width: 600px;
+    margin: 0 auto 40px;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+.hero-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+.btn-secondary {
+    border: 1px solid var(--glass-border);
+    background: rgba(255,255,255,0.05);
+}
+
 
 /* --- CARDS & GRID --- */
 .grid-container {
@@ -120,6 +187,11 @@ nav a:hover, nav a.active { color: var(--accent); }
     grid-template-columns: 2fr 1fr;
     gap: 25px;
 }
+
+/* dashboard-specific panels */
+#admin-panel { display: none; border: 1px solid var(--accent); margin-bottom: 30px; }
+#member-panel { display: none; border-left: 4px solid var(--success); }
+
 
 .card { 
     padding: 25px; 
@@ -183,6 +255,20 @@ input:focus, textarea:focus, select:focus {
     position: relative;
     margin-bottom: 80px; /* Memberi ruang untuk foto profil yang menonjol keluar */
 }
+
+/* --- GENERAL PAGE COMPONENTS --- */
+.page-header { text-align: center; margin: 30px 0 50px; }
+.page-header h1 { font-size: 3rem; margin-bottom: 10px; }
+.page-header p { color: var(--text-secondary); max-width: 600px; margin: 0 auto; }
+
+.search-box { padding: 15px; display: flex; align-items: center; max-width: 600px; margin: 0 auto 40px; border-radius: 50px; }
+.search-box input { border: none; background: transparent; margin: 0; padding: 0 15px; height: auto; box-shadow: none; width: 100%; color: white; }
+.search-box i { color: var(--text-secondary); margin-left: 15px; }
+
+.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+.modal-box { padding: 20px; max-width: 90%; width: 400px; position: relative; border-radius: 12px; }
+.close-modal { position: absolute; top: 10px; right: 10px; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary); }
+
 
 .profile-banner {
     width: 100%;
